@@ -3,7 +3,7 @@ interface ChangeEvent<T> {
     oldValue: any;
     target?: any;
     root: T;
-    property?: string | number | symbol;
+    property?: string;
     res?: any;
 }
 interface PredicateData<T> {
@@ -35,13 +35,14 @@ export default class Watchable<T> {
     private _getNestedValue;
     private _getCallbackKey;
     private _runCallbacks;
-    /** If this.value == value, immediately invokes the callback (and oldValue will == newValue),
-     * otherwise it's syntactic sugar for addChangeListener with options.once = true and options.condition.value = value.
+    /** If predicateFn returns true now, immediately invokes the callback,
+     * otherwise it's syntactic sugar for addChangeListener with options.once = true and options.condition.predicate = predicateFn.
      * @abstract **Use this like a Promise to avoid race conditions***/
     when(predicateFn: PredicateFunction<T>, callback: WatchableCallback<T>): void;
-    /** If this.value.prop == value, immediately invokes the callback (and oldValue will == newValue),
-     * otherwise it's syntactic sugar for addChangeListener with options = { once: true, condition: { prop: prop, value: value } }
-     * @param propertyPath Can use . notation for nested properties. _E.g. employee.name.last looks up this.value.employee.name.last_
+    /** If predicateFn returns true now, immediately invokes the callback,
+     * otherwise it's syntactic sugar for addChangeListener with options = { once: true, condition:
+     * { propertyPath: propertyPath, predicate: predicateFn } }
+     * @propertyPath Can use . notation for nested properties. _E.g. employee.name.last looks up this.value.employee.name.last_
      * @abstract **Use this like a Promise to avoid race conditions**
      */
     when(propertyPath: string, predicateFn: PredicateFunction<T>, callback: WatchableCallback<T>): void;
