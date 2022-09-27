@@ -56,6 +56,60 @@ Removes the callback from the instances change listeners. Note, unnamed callback
 
 Removes all change listeners from the instance.
 
+### The changeEvent parameter
+
+Both callback and predicate functions optionally take a single ChangeEvent object parameter which provides data on the change.
+
+```TS
+interface ChangeEvent<T> {
+    newValue: any;
+    oldValue: any;
+    root: T;
+    target?: any;
+    property?: string;
+    res?: any;
+}
+```
+
+#### newValue
+
+##### If T is a primitive, the new value. If T is a complex type, a new property value, however deeply nested.
+
+```TS
+const count = new Watchable(1);
+count.addChangeListener(e => { console.log(e.newValue); });
+count.value++; // logs: 2
+count.value += 100; // logs: 102
+
+const foods = new Watchable({
+    dairy: ["cheese", "milk", "yogurt"],
+    grains: ["oats", "wheat", "barley", "popcorn"]
+});
+
+foods.addChangeListener(e => { console.log(`${e.property}: ${e.newValue}`); } );
+foods.value.grains.push("corn"); // logs: "4: corn"
+```
+
+#### oldValue
+
+##### If T is a primitive, its previous value. If T is a complex type, the previous value of a changed property, however deeply nested. _If the property/value is a complex type, then oldValue === newValue because newValue/oldValue are shallow copies. Also, if the property didn't already exists (such as a new array index), oldValue will be undefined._
+
+#### target
+
+##### The object whose property changed. Undefined for primitives.
+
+#### root
+
+##### Alias for the Watchable.value property
+
+#### property
+
+##### The property that got changed
+
+#### res
+
+##### The resolution of the propertyPath string if one was provided via a paired predicateFn, else undefined
+
 ---
 
 ## Examples
@@ -112,7 +166,7 @@ const person = new Watchable({
 });
 person.when(
     "qualities.interests.length",
-    e => e.res >= 5, // condition is met when qualties.interests.length >= 5
+    e => e.res >= 5, // condition is met when qualities.interests.length >= 5
     (e) => {
         console.log(`${e.root.name} has quite a few interests,
          including ${e.target.join(", ")}`)
