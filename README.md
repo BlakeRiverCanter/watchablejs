@@ -1,6 +1,6 @@
-# Watchable TS
+# WatchableTS
 
-watchablets provides the Watchable class which uses Proxies behind the scenes to allow adding Event-like handlers to value changes of any type T. Simply create a new Watchable(T) and add listeners to execute provided callbacks on value changes. Or use the when() member function to invoke a callback only once, based on a predicate; either immediately if the predicate is already true, or the next time the value changes to make it true. The callback and predicate functions optionally take a ChangeEvent parameter which provides data on the change.
+WatchableTS provides the Watchable class which uses Proxies behind the scenes to allow adding Event-like handlers to value changes of any type T. Simply create a new Watchable(T) and add listeners to execute provided callbacks on value changes. Or use the when() member function to invoke a callback only once, based on a predicate; either immediately if the predicate is already true, or the next time the value changes to make it true. The callback and predicate functions optionally take a ChangeEvent parameter which provides data on the change.
 
 ## Rational
 
@@ -56,6 +56,8 @@ Removes the callback from the instances change listeners. Note, unnamed callback
 
 Removes all change listeners from the instance.
 
+---
+
 ### The changeEvent parameter
 
 Both callback and predicate functions optionally take a single ChangeEvent object parameter which provides data on the change.
@@ -73,7 +75,7 @@ interface ChangeEvent<T> {
 
 #### newValue
 
-##### If T is a primitive, the new value. If T is a complex type, a new property value, however deeply nested.
+##### If T is a primitive, its new value. If T is a complex type, this is a new property value, however deeply nested.
 
 ```TS
 const count = new Watchable(1);
