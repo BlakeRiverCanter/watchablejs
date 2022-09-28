@@ -32,6 +32,7 @@ export default class Watchable<T> {
 
     constructor();
     /** @param initialValue Establishes type T and provides and initializes this.value */
+    constructor(initialValue: T)
     constructor(initialValue?: T) {
         this._proxy = this._deepProxy({ value: initialValue });
     }

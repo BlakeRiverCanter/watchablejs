@@ -26,6 +26,8 @@ export default class Watchable<T> {
     private _predicates;
     private _oldValue;
     constructor();
+    /** @param initialValue Establishes type T and provides and initializes this.value */
+    constructor(initialValue: T);
     get value(): T | undefined;
     set value(x: T | undefined);
     private _deepProxy;
