@@ -1,8 +1,8 @@
 interface ChangeEvent<T> {
     newValue: any;
     oldValue: any;
+    root: T | undefined;
     target?: any;
-    root: T;
     property?: string;
     res?: any;
 }
@@ -20,16 +20,14 @@ declare type PredicateFunction<T> = (changeEvent?: ChangeEvent<T>) => boolean;
  *
  * Use the value property to access the wrapped type T */
 export default class Watchable<T> {
-    [key: string | symbol | number]: any;
     private _proxy;
     private _callbacks;
     private _toRemove;
     private _predicates;
     private _oldValue;
-    /** @param initialValue Establishes type T and provides and initializes this.value */
-    constructor(initialValue: T);
-    get value(): T;
-    set value(x: T);
+    constructor();
+    get value(): T | undefined;
+    set value(x: T | undefined);
     private _deepProxy;
     private _createProxy;
     private _getNestedValue;
@@ -47,7 +45,7 @@ export default class Watchable<T> {
      */
     when(propertyPath: string, predicateFn: PredicateFunction<T>, callback: WatchableCallback<T>): void;
     /** Adds the provided callback to the change listeners
-     * @options once: if true, removed after the first trigger
+     * @options once: if true, callback is removed after its first trigger
      * @options condition: if provided, the callback will only trigger if condition.predicate returns true
      * @options condition.propertyPath: a string matching the . notation lookup of a (nested) property. May provide if T is an object. Populates the condition.predicate function's
      * ChangeEvent parameter's "res" property with the resolution of the path (if there is one). _E.g. employee.name.last looks up this.value.employee.name.last_

@@ -1,8 +1,8 @@
 interface ChangeEvent<T> {
     newValue: any;
     oldValue: any;
+    root: T | undefined;
     target?: any;
-    root: T;
     property?: string;
     res?: any;
 }
@@ -24,15 +24,15 @@ type PredicateFunction<T> = (changeEvent?: ChangeEvent<T>) => boolean;
  *
  * Use the value property to access the wrapped type T */
 export default class Watchable<T> {
-    [key: string | symbol | number]: any;
-    private _proxy: { value: T };
+    private _proxy: { value: T | undefined };
     private _callbacks: Record<string, WatchableCallback<T>> = {};
     private _toRemove = new Set<string>();
     private _predicates: Record<string, PredicateData<T>> = {};
     private _oldValue: any;
 
+    constructor();
     /** @param initialValue Establishes type T and provides and initializes this.value */
-    constructor(initialValue: T) {
+    constructor(initialValue?: T) {
         this._proxy = this._deepProxy({ value: initialValue });
     }
 
@@ -130,7 +130,7 @@ export default class Watchable<T> {
             }
         }
     }
- 
+
     /** If predicateFn returns true now, immediately invokes the callback,
      * otherwise it's syntactic sugar for addChangeListener with options.once = true and options.condition.predicate = predicateFn.
      * @abstract **Use this like a Promise to avoid race conditions***/
@@ -139,7 +139,7 @@ export default class Watchable<T> {
         callback: WatchableCallback<T>
     ): void;
     /** If predicateFn returns true now, immediately invokes the callback,
-     * otherwise it's syntactic sugar for addChangeListener with options = { once: true, condition: 
+     * otherwise it's syntactic sugar for addChangeListener with options = { once: true, condition:
      * { propertyPath: propertyPath, predicate: predicateFn } }
      * @propertyPath Can use . notation for nested properties. _E.g. employee.name.last looks up this.value.employee.name.last_
      * @abstract **Use this like a Promise to avoid race conditions**
@@ -203,7 +203,7 @@ export default class Watchable<T> {
     }
 
     /** Adds the provided callback to the change listeners
-     * @options once: if true, removed after the first trigger
+     * @options once: if true, callback is removed after its first trigger
      * @options condition: if provided, the callback will only trigger if condition.predicate returns true
      * @options condition.propertyPath: a string matching the . notation lookup of a (nested) property. May provide if T is an object. Populates the condition.predicate function's
      * ChangeEvent parameter's "res" property with the resolution of the path (if there is one). _E.g. employee.name.last looks up this.value.employee.name.last_

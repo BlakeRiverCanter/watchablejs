@@ -1,5 +1,5 @@
 {
-    "name": "watchablets",
+    "name": "watchablejs",
     "version": "1.0.0",
     "description": "The Watchable class provides the ability to add value change callbacks to any type T.",
     "main": "lib/watchable.js",
@@ -12,18 +12,19 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/BlakeRiverCanter/watchablets.git"
+        "url": "git+https://github.com/BlakeRiverCanter/watchablejs.git"
     },
     "keywords": [
         "typescript",
-        "async"
+        "async",
+        "reactive"
     ],
     "author": "Blake River Canter",
     "license": "BSD-3-Clause",
     "bugs": {
-        "url": "https://github.com/BlakeRiverCanter/watchablets/issues"
+        "url": "https://github.com/BlakeRiverCanter/watchablejs/issues"
     },
-    "homepage": "https://github.com/BlakeRiverCanter/watchablets#readme",
+    "homepage": "https://github.com/BlakeRiverCanter/watchablejs#readme",
     "devDependencies": {
         "typescript": "^4.8.3"
     }

@@ -1,6 +1,6 @@
-# WatchableTS
+# WatchableJS
 
-WatchableTS provides the Watchable class which uses Proxies behind the scenes to allow adding Event-like handlers to value changes of any type T. Simply create a new Watchable(T) and add listeners to execute provided callbacks on value changes. Or use the when() member function to invoke a callback only once, based on a predicate; either immediately if the predicate is already true, or the next time the value changes to make it true. The callback and predicate functions optionally take a ChangeEvent parameter which provides data on the change.
+WatchableJS provides the Watchable class which uses Proxies behind the scenes to allow adding Event-like handlers to value changes of any type T. Simply create a new Watchable(T) and add listeners to execute provided callbacks on value changes. Or use the when() member function to invoke a callback only once, based on a predicate; either immediately if the predicate is already true, or the next time the value changes to make it true. The callback and predicate functions optionally take a ChangeEvent parameter which provides data on the change.
 
 ## Rational
 
@@ -9,7 +9,7 @@ I wanted the ability to asynchronously await a value change on a js primitive in
 ## Installing
 
 ```bash
-npm install watchablets
+npm install watchablejs
 ```
 
 ---
@@ -66,7 +66,7 @@ Both callback and predicate functions optionally take a single ChangeEvent objec
 interface ChangeEvent<T> {
     newValue: any;
     oldValue: any;
-    root: T;
+    root: T | undefined;
     target?: any;
     property?: string;
     res?: any;
