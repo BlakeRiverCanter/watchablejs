@@ -1,6 +1,6 @@
 {
     "name": "@blakecanter/watchablejs",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "The Watchable class provides the ability to add value change callbacks to any type T.",
     "main": "lib/watchable.js",
     "types": "lib/watchable.d.ts",
