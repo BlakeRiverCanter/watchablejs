@@ -13,6 +13,16 @@ npm i @blakecanter/watchablejs
 ```
 
 ---
+## Constructor
+
+A Watchable instance takes its initial value, x, of type T (or undefined if no initialization parameter is supplied), and wraps it in a Proxy of the object { value: x }, where the type of value is T. However, this is abstracted away by the class's [value property](#watchablevalue) getter, which returns the value property directly.
+
+```TS
+const ex1 = new Watchable(); // ex1.value === undefined
+const ex2 = new Watchable("hello"); // ex2.value === "hello"
+const ex3 = new Watchable<boolean>(); // ex3.value === undefined
+ex3.value = "not boolean"; // error: "Type 'string' is not assignable to type 'boolean'.(2322)"
+```
 
 ## Properties
 
@@ -29,16 +39,16 @@ Add a callback to Watchable.value or nested property changes.
 -   callback takes an optional [changeEvent](#the-changeevent-parameter) parameter
 -   options is an object with the shape:
 
-    > { once: boolean; condition?: PredicateData<T>; }
+    > { once?: boolean; condition?: PredicateData<T>; }
 
     -   once: if true, the handler will be removed after its first invocation
 
     -   condition: an object with the shape:
 
-        > { propertyPath: string; predicate: PredicateFunction; }
+        > { propertyPath?: string; predicate: PredicateFunction; }
 
-        -   propertyPath: for use with object types. A string mimicking the dot-notation lookup of a nested property. If this successfully resolves, the predicate's [changeEvent](#the-changeevent-parameter).res parameter is populated with its value.
-        -   predicate: a predicate function which takes a [changeEvent](#the-changeevent-parameter) parameter and must return coerce a boolean indicating whether the callback should be invoked or not.
+        -   propertyPath: _optional and only for use with object types_. A string mimicking the dot-notation lookup of a nested property. If this successfully resolves, the predicate's [changeEvent](#the-changeevent-parameter).res parameter is populated with its value.
+        -   predicate: a predicate function which takes a [changeEvent](#the-changeevent-parameter) parameter and must return a boolean (can be coerced) indicating whether the callback should be invoked or not.
 
 ### Watchable.when(predicateFn, callback)
 
@@ -98,19 +108,19 @@ foods.value.grains.push("corn"); // logs: "4: corn"
 
 #### target
 
-##### The object whose property changed. Undefined for primitives.
+##### The object whose property changed. Will always be "value" for Watchable primitives (since they are wrapped in { value: x }).
 
 #### root
 
-##### Alias for the Watchable.value property
+##### Alias for the Watchable.value property (which will be undefined for uninitialized instances and the same as newValue for primitives).
 
 #### property
 
-##### The property that got changed
+##### The property that got changed.
 
 #### res
 
-##### The resolution of the propertyPath string if one was provided via a paired predicateFn, else undefined
+##### The resolution of the propertyPath string if one was provided via a paired predicateFn, else undefined.
 
 ---
 

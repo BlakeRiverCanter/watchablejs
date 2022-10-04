@@ -24,7 +24,7 @@ type PredicateFunction<T> = (changeEvent?: ChangeEvent<T>) => boolean;
  *
  * Use the value property to access the wrapped type T */
 export default class Watchable<T> {
-    private _proxy: { value: T | undefined };
+    private _proxy: { value: T };
     private _callbacks: Record<string, WatchableCallback<T>> = {};
     private _toRemove = new Set<string>();
     private _predicates: Record<string, PredicateData<T>> = {};
@@ -44,7 +44,7 @@ export default class Watchable<T> {
     set value(x) {
         this._oldValue = this.value;
 
-        if (x && typeof x == "object") {
+        if (x && typeof x === "object") {
             this._proxy.value = this._deepProxy(x);
         } else {
             this._proxy.value = x;
@@ -53,7 +53,7 @@ export default class Watchable<T> {
 
     private _deepProxy(obj: any) {
         for (const [key, value] of Object.entries(obj)) {
-            if (value && typeof value == "object") {
+            if (value && typeof value === "object") {
                 obj[key] = this._deepProxy(value);
             }
         }
@@ -86,7 +86,7 @@ export default class Watchable<T> {
         const keys = path.split(".");
         try {
             for (const key of keys) {
-                if (value && typeof value == "object") obj = value;
+                if (value && typeof value === "object") obj = value;
                 value = value[key];
             }
         } catch (error) {
@@ -110,7 +110,7 @@ export default class Watchable<T> {
 
                 if (
                     condition.propertyPath &&
-                    typeof this.value == "object" &&
+                    typeof this.value === "object" &&
                     this.value
                 ) {
                     [e.res] = this._getNestedValue(condition.propertyPath);
@@ -157,7 +157,7 @@ export default class Watchable<T> {
     ): void {
         if (
             predicateOrProp &&
-            typeof this.value == "object" &&
+            typeof this.value === "object" &&
             this.value &&
             callbackOrPredicate &&
             callback

@@ -28,8 +28,8 @@ export default class Watchable<T> {
     constructor();
     /** @param initialValue Establishes type T and provides and initializes this.value */
     constructor(initialValue: T);
-    get value(): T | undefined;
-    set value(x: T | undefined);
+    get value(): T;
+    set value(x: T);
     private _deepProxy;
     private _createProxy;
     private _getNestedValue;
