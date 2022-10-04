@@ -9,7 +9,7 @@ I wanted the ability to asynchronously await a value change on a js primitive in
 ## Installing
 
 ```bash
-npm install watchablejs
+npm i @blakecanter/watchablejs
 ```
 
 ---
