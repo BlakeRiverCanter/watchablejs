@@ -32,7 +32,7 @@ export default class Watchable<T> {
 
     constructor();
     /** @param initialValue Establishes type T and provides and initializes this.value */
-    constructor(initialValue: T)
+    constructor(initialValue: T);
     constructor(initialValue?: T) {
         this._proxy = this._deepProxy({ value: initialValue });
     }
@@ -139,6 +139,18 @@ export default class Watchable<T> {
         predicateFn: PredicateFunction<T>,
         callback: WatchableCallback<T>
     ): void;
+    /** If value === this.value, immediately invokes callback. Otherwise, sets up a one-time change listener with that predicate.
+     * @abstract **Use this like a Promise to avoid race conditions***/
+    when(value: any, callback: WatchableCallback<T>): void;
+    /** If [propertyPath resolution] === this.value, immediately invokes callback. Otherwise, sets up a one-time change listener with that predicate.
+     * @propertyPath Can use . notation for nested properties. _E.g. employee.name.last looks up this.value.employee.name.last_
+     * @abstract **Use this like a Promise to avoid race conditions**
+     */
+    when(
+        propertyPath: string,
+        value: any,
+        callback: WatchableCallback<T>
+    ): void;
     /** If predicateFn returns true now, immediately invokes the callback,
      * otherwise it's syntactic sugar for addChangeListener with options = { once: true, condition:
      * { propertyPath: propertyPath, predicate: predicateFn } }
@@ -151,35 +163,70 @@ export default class Watchable<T> {
         callback: WatchableCallback<T>
     ): void;
     when(
-        predicateOrProp: any,
-        callbackOrPredicate?: any,
+        predicateValueOrProp: any,
+        callbackValueOrPredicate?: any,
         callback?: WatchableCallback<T>
     ): void {
         if (
-            predicateOrProp &&
-            typeof this.value === "object" &&
+            predicateValueOrProp &&
             this.value &&
-            callbackOrPredicate &&
+            callbackValueOrPredicate &&
             callback
         ) {
-            const [val, obj] = this._getNestedValue(predicateOrProp);
+            if (typeof this.value !== "object") {
+                throw "Cannot use this when() overload when Watchable is not wrapping an object type";
+            }
+
+            const [val, obj] = this._getNestedValue(predicateValueOrProp);
             const changeEvent: ChangeEvent<T> = {
                 newValue: val,
                 oldValue: this._oldValue,
-                property: predicateOrProp.split(".").at(-1),
+                property: predicateValueOrProp.split(".").at(-1),
                 root: this.value,
                 target: obj,
                 res: val
             };
 
-            if (callbackOrPredicate(changeEvent)) {
-                callback(changeEvent);
+            if (typeof callbackValueOrPredicate === "function") {
+                if (callbackValueOrPredicate(changeEvent)) {
+                    callback(changeEvent);
+                } else {
+                    this.addChangeListener(callback, {
+                        once: true,
+                        condition: {
+                            propertyPath: predicateValueOrProp,
+                            predicate: callbackValueOrPredicate
+                        }
+                    });
+                }
             } else {
-                this.addChangeListener(callback, {
+                if (callbackValueOrPredicate === val) {
+                    callback(changeEvent);
+                } else {
+                    this.addChangeListener(callback, {
+                        once: true,
+                        condition: {
+                            propertyPath: predicateValueOrProp,
+                            predicate: (e) =>
+                                e?.res === callbackValueOrPredicate
+                        }
+                    });
+                }
+            }
+        } else if (typeof predicateValueOrProp === "function") {
+            const changeEvent: ChangeEvent<T> = {
+                newValue: this.value,
+                oldValue: this._oldValue,
+                root: this.value
+            };
+
+            if (predicateValueOrProp(changeEvent)) {
+                callbackValueOrPredicate(changeEvent);
+            } else {
+                this.addChangeListener(callbackValueOrPredicate, {
                     once: true,
                     condition: {
-                        propertyPath: predicateOrProp,
-                        predicate: callbackOrPredicate
+                        predicate: predicateValueOrProp
                     }
                 });
             }
@@ -190,13 +237,13 @@ export default class Watchable<T> {
                 root: this.value
             };
 
-            if (predicateOrProp(changeEvent)) {
-                callbackOrPredicate(changeEvent);
+            if (predicateValueOrProp === this.value) {
+                callbackValueOrPredicate(changeEvent);
             } else {
-                this.addChangeListener(callbackOrPredicate, {
+                this.addChangeListener(callbackValueOrPredicate, {
                     once: true,
                     condition: {
-                        predicate: predicateOrProp
+                        predicate: (x) => x?.newValue === predicateValueOrProp
                     }
                 });
             }

@@ -54,6 +54,15 @@ Add a callback to Watchable.value or nested property changes.
 
 If predicateFn returns true, immediately invokes callback, otherwise adds a change listener with callback and options.once = true and options.condition.predicate = predicateFn.
 
+
+### Watchable.when(value, callback)
+
+If value === this.value, immediately invokes callback. Otherwise, sets up a one-time change listener with that predicate.
+
+### Watchable.when(propertyPath, value, callback)
+
+If [propertyPath resolution] === this.value, immediately invokes callback. Otherwise, sets up a one-time change listener with that predicate.
+
 ### Watchable.when(propertyPath, predicateFn, callback)
 
 Like the other overloads except predicateFn's changeEvent parameter will have its "res" property populated with the resolution of propertyPath. See the [example](#using-whenpropertypath-predicatefn-callback).
