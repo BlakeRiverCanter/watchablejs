@@ -39,6 +39,14 @@ export default class Watchable<T> {
      * otherwise it's syntactic sugar for addChangeListener with options.once = true and options.condition.predicate = predicateFn.
      * @abstract **Use this like a Promise to avoid race conditions***/
     when(predicateFn: PredicateFunction<T>, callback: WatchableCallback<T>): void;
+    /** If value === this.value, immediately invokes callback. Otherwise, sets up a one-time change listener with that predicate.
+     * @abstract **Use this like a Promise to avoid race conditions***/
+    when(value: any, callback: WatchableCallback<T>): void;
+    /** If [propertyPath resolution] === this.value, immediately invokes callback. Otherwise, sets up a one-time change listener with that predicate.
+     * @propertyPath Can use . notation for nested properties. _E.g. employee.name.last looks up this.value.employee.name.last_
+     * @abstract **Use this like a Promise to avoid race conditions**
+     */
+    when(propertyPath: string, value: any, callback: WatchableCallback<T>): void;
     /** If predicateFn returns true now, immediately invokes the callback,
      * otherwise it's syntactic sugar for addChangeListener with options = { once: true, condition:
      * { propertyPath: propertyPath, predicate: predicateFn } }
