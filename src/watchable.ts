@@ -132,6 +132,20 @@ export default class Watchable<T> {
         }
     }
 
+    /** Returns a void promise that resolves when the provided predicateFn returns true */
+    promiseWhen(predicateFn: PredicateFunction<T>): Promise<void>;
+    /** Returns a void promise that resolves when this.value === value */
+    promiseWhen(value: T): Promise<void>;
+    /** Returns a void promise that resolves when the provided property === value */
+    promiseWhen(propertyPath: string, value: any): Promise<void>;
+    promiseWhen(predicateValueOrProp: any, value?: any): Promise<void> {
+        return new Promise<void>((res) => {
+            this.when(predicateValueOrProp, value, () => {
+                res()
+            });
+        });
+    }
+
     /** If predicateFn returns true now, immediately invokes the callback,
      * otherwise it's syntactic sugar for addChangeListener with options.once = true and options.condition.predicate = predicateFn.
      * @abstract **Use this like a Promise to avoid race conditions***/
@@ -141,7 +155,7 @@ export default class Watchable<T> {
     ): void;
     /** If value === this.value, immediately invokes callback. Otherwise, sets up a one-time change listener with that predicate.
      * @abstract **Use this like a Promise to avoid race conditions***/
-    when(value: any, callback: WatchableCallback<T>): void;
+    when(value: T, callback: WatchableCallback<T>): void;
     /** If [propertyPath resolution] === this.value, immediately invokes callback. Otherwise, sets up a one-time change listener with that predicate.
      * @propertyPath Can use . notation for nested properties. _E.g. employee.name.last looks up this.value.employee.name.last_
      * @abstract **Use this like a Promise to avoid race conditions**

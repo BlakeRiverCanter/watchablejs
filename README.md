@@ -67,6 +67,12 @@ If [propertyPath resolution] === this.value, immediately invokes callback. Other
 
 Like the other overloads except predicateFn's changeEvent parameter will have its "res" property populated with the resolution of propertyPath. See the [example](#using-whenpropertypath-predicatefn-callback).
 
+### Watchable.promiseWhen(predicateFn)
+### Watchable.promiseWhen(value)
+### Watchable.promiseWhen(propertyPath, value)
+
+Returns a Promise<void> that resolves when Watchable.when would trigger.
+
 ### Watchable.removeChangeListener(callback)
 
 Removes the callback from the instances change listeners. Note, unnamed callbacks (such as arrow functions not given a symbol) are converted to strings via toString() for storage and lookup in the internal callbacks object. Therefore, passing the exact same arrow function should remove it. However, if removal is planned, a named function should be used for adding/removing listeners.
