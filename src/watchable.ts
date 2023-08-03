@@ -81,7 +81,7 @@ export default class Watchable<T> {
     }
 
     private readonly propRegEx =
-        /(?:\.?(\w+))|(?:\[["]([^"]*)["]])|(?:\[[']([^']*)[']])/gm;
+        /(?:(\w+)$)|(?:(\w+)(?=\.|\[))|(?:\[["]([^"]*)["]])|(?:\[[']([^']*)[']])/gm;
 
     private _getNestedValue(path: string) {
         let value: any = this.value;
