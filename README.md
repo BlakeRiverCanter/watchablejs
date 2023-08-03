@@ -47,7 +47,7 @@ Add a callback to Watchable.value or nested property changes.
 
         > { propertyPath?: string; predicate: PredicateFunction; }
 
-        -   propertyPath: _optional and only for use with object types_. A string mimicking the dot-notation lookup of a nested property. If this successfully resolves, the predicate's [changeEvent](#the-changeevent-parameter).res parameter is populated with its value.
+        -   propertyPath: _optional and only for use with object types_. A string mimicking the dot or bracket notation lookup of a nested property. If this successfully resolves, the predicate's [changeEvent](#the-changeevent-parameter).res parameter is populated with its value. Ex. "prop1.prop2.prop3" or "['prop 1']['prop 2'].prop3" or 'prop1["prop 2"]["prop 3"]' etc.
         -   predicate: a predicate function which takes a [changeEvent](#the-changeevent-parameter) parameter and must return a boolean (can be coerced) indicating whether the callback should be invoked or not.
 
 ### Watchable.when(predicateFn, callback)

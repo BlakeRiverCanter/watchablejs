@@ -80,10 +80,18 @@ export default class Watchable<T> {
         });
     }
 
+    private readonly propRegEx =
+        /(?:\.?(\w+))|(?:\[["]([^"]*)["]])|(?:\[[']([^']*)[']])/gm;
+
     private _getNestedValue(path: string) {
         let value: any = this.value;
         let obj = this._proxy;
-        const keys = path.split(".");
+        const keys: string[] = [];
+
+        for (const match of path.matchAll(this.propRegEx)) {
+            keys.push(match.slice(1).find((v: string) => v)!);
+        }
+
         try {
             for (const key of keys) {
                 if (value && typeof value === "object") obj = value;
@@ -141,7 +149,7 @@ export default class Watchable<T> {
     promiseWhen(predicateValueOrProp: any, value?: any): Promise<void> {
         return new Promise<void>((res) => {
             this.when(predicateValueOrProp, value, () => {
-                res()
+                res();
             });
         });
     }

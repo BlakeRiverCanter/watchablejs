@@ -32,6 +32,7 @@ export default class Watchable<T> {
     set value(x: T);
     private _deepProxy;
     private _createProxy;
+    private readonly propRegEx;
     private _getNestedValue;
     private _getCallbackKey;
     private _runCallbacks;
