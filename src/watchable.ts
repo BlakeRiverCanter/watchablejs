@@ -25,9 +25,14 @@ type PredicateFunction<T> = (changeEvent?: ChangeEvent<T>) => boolean;
  * Use the value property to access the wrapped type T */
 export default class Watchable<T> {
     private _proxy: { value: T };
-    private _callbacks: Record<string, WatchableCallback<T>> = {};
-    private _toRemove = new Set<string>();
-    private _predicates: Record<string, PredicateData<T>> = {};
+    private _callbacks: Set<WatchableCallback<T>> = new Set<
+        WatchableCallback<T>
+    >();
+    private _toRemove = new Set<Function>();
+    private _predicates: Map<Function, PredicateData<T>> = new Map<
+        Function,
+        PredicateData<T>
+    >();
     private _oldValue: any;
 
     constructor();
@@ -104,18 +109,13 @@ export default class Watchable<T> {
         return [value, obj];
     }
 
-    private _getCallbackKey(callback: WatchableCallback<T>) {
-        return callback.name ? callback.name : callback.toString();
-    }
-
     private _runCallbacks(e: ChangeEvent<T>) {
         for (let callback of Object.values(this._callbacks)) {
             let execute = true;
-            const callbackKey = this._getCallbackKey(callback);
 
-            if (callbackKey in this._predicates) {
-                const condition = this._predicates[callbackKey];
+            const condition = this._predicates.get(callback);
 
+            if (condition) {
                 if (
                     condition.propertyPath &&
                     typeof this.value === "object" &&
@@ -132,8 +132,8 @@ export default class Watchable<T> {
             if (execute) {
                 callback(e);
 
-                if (this._toRemove.delete(callbackKey)) {
-                    delete this._predicates[callbackKey];
+                if (this._toRemove.delete(callback)) {
+                    this._predicates.delete(callback);
                     this.removeChangeListener(callback);
                 }
             }
@@ -147,11 +147,19 @@ export default class Watchable<T> {
     /** Returns a void promise that resolves when the provided property === value */
     promiseWhen(propertyPath: string, value: any): Promise<void>;
     promiseWhen(predicateValueOrProp: any, value?: any): Promise<void> {
-        return new Promise<void>((res) => {
-            this.when(predicateValueOrProp, value, () => {
-                res();
+        if (value) {
+            return new Promise<void>((res) => {
+                this.when(predicateValueOrProp, value, () => {
+                    res();
+                });
             });
-        });
+        } else {
+            return new Promise<void>((res) => { 
+                this.when(predicateValueOrProp, () => {
+                    res();
+                });
+            });
+        }
     }
 
     /** If predicateFn returns true now, immediately invokes the callback,
@@ -282,29 +290,25 @@ export default class Watchable<T> {
         callback: WatchableCallback<T>,
         options: WatchOptions<T> = { once: false }
     ) {
-        const callbackKey = this._getCallbackKey(callback);
-        this._callbacks[callbackKey] = callback;
+        this._callbacks.add(callback);
 
         if (options) {
             if (options.once) {
-                this._toRemove.add(callbackKey);
+                this._toRemove.add(callback);
             }
             if (options.condition) {
-                this._predicates[callbackKey] = options.condition;
+                this._predicates.set(callback, options.condition);
             }
         }
     }
 
     /** Removes the provided callback from the change listeners */
     removeChangeListener(callback: WatchableCallback<T>) {
-        const callbackKey = this._getCallbackKey(callback);
-        delete this._callbacks[callbackKey];
+        this._callbacks.delete(callback);
     }
 
     /** Removes all change listeners */
     clearListeners() {
-        for (var prop in this._callbacks) {
-            delete this._callbacks[prop];
-        }
+        this._callbacks.clear();
     }
 }
