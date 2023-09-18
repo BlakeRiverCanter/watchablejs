@@ -110,7 +110,7 @@ export default class Watchable<T> {
     }
 
     private _runCallbacks(e: ChangeEvent<T>) {
-        for (let callback of Object.values(this._callbacks)) {
+        for (let callback of this._callbacks) {
             let execute = true;
 
             const condition = this._predicates.get(callback);
@@ -133,7 +133,6 @@ export default class Watchable<T> {
                 callback(e);
 
                 if (this._toRemove.delete(callback)) {
-                    this._predicates.delete(callback);
                     this.removeChangeListener(callback);
                 }
             }
@@ -154,7 +153,7 @@ export default class Watchable<T> {
                 });
             });
         } else {
-            return new Promise<void>((res) => { 
+            return new Promise<void>((res) => {
                 this.when(predicateValueOrProp, () => {
                     res();
                 });
@@ -305,10 +304,14 @@ export default class Watchable<T> {
     /** Removes the provided callback from the change listeners */
     removeChangeListener(callback: WatchableCallback<T>) {
         this._callbacks.delete(callback);
+        this._toRemove.delete(callback);
+        this._predicates.delete(callback);
     }
 
     /** Removes all change listeners */
     clearListeners() {
         this._callbacks.clear();
+        this._toRemove.clear();
+        this._predicates.clear();
     }
 }
