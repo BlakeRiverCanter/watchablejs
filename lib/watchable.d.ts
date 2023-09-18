@@ -34,7 +34,6 @@ export default class Watchable<T> {
     private _createProxy;
     private readonly propRegEx;
     private _getNestedValue;
-    private _getCallbackKey;
     private _runCallbacks;
     /** Returns a void promise that resolves when the provided predicateFn returns true */
     promiseWhen(predicateFn: PredicateFunction<T>): Promise<void>;
